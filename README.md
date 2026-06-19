@@ -9,7 +9,6 @@
 - One-click toggle for default appearances
 - Default Appearances OFF
 - Default Appearances ON
-- Uses the normal 80 / 100 display settings
 - Lightweight button placed next to the Unsafe Portals style position
 
 ## Installation
