@@ -9,7 +9,6 @@
 - One-click toggle for default player appearances
 - **Default Appearances OFF** uses the lower display setting
 - **Default Appearances ON** uses the 100-player display setting
-- Clean button placed next to the common bottom-left utility button position
 - No extra configuration required
 
 ## Installation
