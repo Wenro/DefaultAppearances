@@ -14,24 +14,24 @@
 ## Installation
 
 1. Download the latest release.
-2. Extract the `ToggleAppearance` folder.
+2. Extract the `DefaultAppearances` folder.
 3. Place it inside your ArcheAge Classic `addons` folder.
 4. Add this line to `addons.txt`:
 
 ```text
-ToggleAppearance
+DefaultAppearances
 ```
 
 Expected path:
 
 ```text
-addons/ToggleAppearance/main.lua
+addons/DefaultAppearances/main.lua
 ```
 
 ## Addon info
 
 ```lua
-name = "Toggle Appearance"
+name = "DefaultAppearances"
 author = "Dope"
 version = "1.0.5"
 desc = "Easy toggle on and off for default appearances. Button looks and placement comes from Unsafe Portals by Notuli."
