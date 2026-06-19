@@ -1,8 +1,7 @@
-# Toggle Appearance
-
+# DefaultAppearances
 ![Toggle Appearance banner](banner.png)
 
-**Toggle Appearance** is a lightweight ArcheAge Classic addon that adds a simple button for turning default player appearances on and off.
+**DefaultAppearances** is a lightweight ArcheAge Classic addon that adds a simple button for turning default player appearances on and off.
 
 ## Features
 
