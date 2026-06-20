@@ -1,3 +1,4 @@
+<img width="2172" height="724" alt="banner" src="https://github.com/user-attachments/assets/d2002f29-3b0f-4ce4-b27f-4942b3fd49bb" />
 # DefaultAppearances
 
 Easy toggle on and off for default appearances.
