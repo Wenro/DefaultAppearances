@@ -1,42 +1,35 @@
 # DefaultAppearances
 
-![DefaultAppearances banner](banner.png)
+Easy toggle on and off for default appearances.
 
-**DefaultAppearances** is a lightweight ArcheAge Classic addon that adds a simple button for turning default player appearances on and off.
+Button looks and placement comes from Unsafe Portals by Notuli.
 
-## Features
+## What it does
 
-- One-click toggle for default appearances
-- Default Appearances OFF
-- Default Appearances ON
-- Lightweight button placed next to the Unsafe Portals style position
+DefaultAppearances adds a small movable button that toggles the default player appearance setting on and off.
 
-## Installation
+It only uses these default appearance API calls:
 
-1. Download the latest release.
-2. Extract the `DefaultAppearances` folder.
-3. Place it in your ArcheAge Classic `addons` folder.
-4. Add this line to `addons.txt`:
+- `api.Option:GetCustomCloneModeSetting()`
+- `api.Option:SetCustomCloneModeSetting(value)`
 
-```text
-DefaultAppearances
-```
+It does not change displayed-player count or model-count settings.
 
-Expected path:
+## Usage
 
-```text
-addons/DefaultAppearances/main.lua
-```
+Click the button to toggle default appearances.
 
-## Addon info
+Shift + drag the button to move it. The position is saved.
 
-```lua
-name = "DefaultAppearances"
-author = "Dope"
-version = "1.0.6"
-desc = "Easy toggle on and off for default appearances. Button looks and placement comes from Unsafe Portals by Notuli."
-```
+The button text updates based on the current setting:
 
-## Credits
+- `Default Appearances ON`
+- `Default Appearances OFF`
 
-Button looks and placement comes from **Unsafe Portals** by **Notuli**.
+## Version
+
+1.0.8
+
+## Author
+
+Dope

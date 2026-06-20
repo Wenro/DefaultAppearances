@@ -3,70 +3,23 @@ local api = require("api")
 local default_appearances_addon = {
     name = "DefaultAppearances",
     author = "Dope",
-    version = "1.0.6",
+    version = "1.0.8",
     desc = "Easy toggle on and off for default appearances. Button looks and placement comes from Unsafe Portals by Notuli."
 }
 
+local SETTINGS_KEY = "default_appearances"
+
+local settings = nil
 local defaultAppearancesWindow = nil
 local defaultAppearancesBtn = nil
-local appearanceEnabled = false
 
-local VALUE_OFF = 2
-local VALUE_ON = 3
 local BUTTON_W = 194
 local BUTTON_H = 28
-local BUTTON_X = 132
-local BUTTON_Y = -30
+local DEFAULT_X = 132
+local DEFAULT_Y = -30
 
-local function log(msg)
-    if api ~= nil and api.Log ~= nil and api.Log.Info ~= nil then
-        api.Log:Info("[DefaultAppearances] " .. tostring(msg))
-    end
-end
-
-local function setModelLimit(value)
-    pcall(function()
-        api.Option:SetCustomCloneModelCountSetting(value)
-    end)
-
-    pcall(function()
-        if ADDON ~= nil and ADDON.ImportAPI ~= nil then
-            ADDON:ImportAPI(31)
-        end
-    end)
-
-    pcall(function()
-        if X2Option ~= nil and X2Option.SetConsoleVariable ~= nil then
-            X2Option:SetConsoleVariable("e_custom_max_model", tostring(value))
-        end
-    end)
-end
-
-local function setAppearanceCheckbox(on)
-    local value = 0
-    if on then
-        value = 1
-    end
-
-    pcall(function() api.Option:SetCustomCloneModeSetting(value) end)
-    pcall(function() api.Option:SetUseCustomCloneModeSetting(value) end)
-    pcall(function() api.Option:SetDefaultAppearanceSetting(value) end)
-    pcall(function() api.Option:SetDefaultAppearancesSetting(value) end)
-    pcall(function() api.Option:SetDefaultPlayerAppearanceSetting(value) end)
-    pcall(function() api.Option:SetDefaultPlayerAppearancesSetting(value) end)
-    pcall(function() api.Option:SetUseDefaultPlayerAppearanceSetting(value) end)
-
-    pcall(function()
-        if ADDON ~= nil and ADDON.ImportAPI ~= nil then
-            ADDON:ImportAPI(31)
-        end
-    end)
-
-    pcall(function()
-        if X2Option ~= nil and X2Option.SetItemFloatValue ~= nil and OIT_E_CUSTOM_CLONE_MODE ~= nil then
-            X2Option:SetItemFloatValue(OIT_E_CUSTOM_CLONE_MODE, value)
-        end
-    end)
+local function saveSettings()
+    api.SaveSettings(SETTINGS_KEY, settings)
 end
 
 local function updateButtonText()
@@ -74,53 +27,120 @@ local function updateButtonText()
         return
     end
 
-    if appearanceEnabled then
+    if api.Option:GetCustomCloneModeSetting() ~= 0 then
         defaultAppearancesBtn:SetText("Default Appearances ON")
     else
         defaultAppearancesBtn:SetText("Default Appearances OFF")
     end
 end
 
-local function applyAppearanceState()
-    local value = VALUE_OFF
-    if appearanceEnabled then
-        value = VALUE_ON
-    end
-
-    setAppearanceCheckbox(appearanceEnabled)
-    setModelLimit(value)
-    updateButtonText()
-
-    if appearanceEnabled then
-        log("Default Appearances ON")
+local function toggleDefaultAppearance()
+    if api.Option:GetCustomCloneModeSetting() ~= 0 then
+        api.Option:SetCustomCloneModeSetting(0)
     else
-        log("Default Appearances OFF")
+        api.Option:SetCustomCloneModeSetting(1)
     end
+
+    updateButtonText()
+end
+
+local function startMovingButton()
+    if defaultAppearancesWindow == nil then
+        return
+    end
+
+    if api.Input:IsShiftKeyDown() then
+        defaultAppearancesWindow:StartMoving()
+        api.Cursor:ClearCursor()
+        api.Cursor:SetCursorImage(CURSOR_PATH.MOVE, 0, 0)
+    end
+end
+
+local function stopMovingButton()
+    if defaultAppearancesWindow == nil then
+        return
+    end
+
+    defaultAppearancesWindow:StopMovingOrSizing()
+    api.Cursor:ClearCursor()
+
+    settings.x, settings.y = defaultAppearancesWindow:GetOffset()
+    saveSettings()
 end
 
 local function createButton()
     defaultAppearancesWindow = api.Interface:CreateEmptyWindow("defaultAppearancesWindow", "UIParent")
     defaultAppearancesWindow:SetExtent(BUTTON_W, BUTTON_H)
-    defaultAppearancesWindow:AddAnchor("BOTTOMLEFT", "UIParent", BUTTON_X, BUTTON_Y)
+    defaultAppearancesWindow:AddAnchor("BOTTOMLEFT", "UIParent", settings.x or DEFAULT_X, settings.y or DEFAULT_Y)
+    defaultAppearancesWindow:EnableDrag(true)
+
+    function defaultAppearancesWindow:OnDragStart()
+        startMovingButton()
+    end
+    defaultAppearancesWindow:SetHandler("OnDragStart", defaultAppearancesWindow.OnDragStart)
+
+    function defaultAppearancesWindow:OnDragStop()
+        stopMovingButton()
+    end
+    defaultAppearancesWindow:SetHandler("OnDragStop", defaultAppearancesWindow.OnDragStop)
 
     defaultAppearancesBtn = defaultAppearancesWindow:CreateChildWidget("button", "defaultAppearancesBtn", 0, true)
     ApplyButtonSkin(defaultAppearancesBtn, BUTTON_BASIC.DEFAULT)
     defaultAppearancesBtn:SetExtent(BUTTON_W, BUTTON_H)
     defaultAppearancesBtn:AddAnchor("TOPLEFT", defaultAppearancesWindow, 0, 0)
-    updateButtonText()
+    defaultAppearancesBtn:EnableDrag(true)
 
     function defaultAppearancesBtn:OnClick()
-        appearanceEnabled = not appearanceEnabled
-        applyAppearanceState()
+        if api.Input:IsShiftKeyDown() then
+            return
+        end
+
+        toggleDefaultAppearance()
     end
     defaultAppearancesBtn:SetHandler("OnClick", defaultAppearancesBtn.OnClick)
 
+    function defaultAppearancesBtn:OnDragStart()
+        startMovingButton()
+    end
+    defaultAppearancesBtn:SetHandler("OnDragStart", defaultAppearancesBtn.OnDragStart)
+
+    function defaultAppearancesBtn:OnDragStop()
+        stopMovingButton()
+    end
+    defaultAppearancesBtn:SetHandler("OnDragStop", defaultAppearancesBtn.OnDragStop)
+
+    function defaultAppearancesBtn:OnEnter()
+        local posX, posY = self:GetOffset()
+        api.Interface:SetTooltipOnPos(
+            "DefaultAppearances\n\nClick to toggle default appearances.\nShift + drag to move.",
+            defaultAppearancesWindow,
+            posX + 50,
+            posY + 20
+        )
+    end
+    defaultAppearancesBtn:SetHandler("OnEnter", defaultAppearancesBtn.OnEnter)
+
+    function defaultAppearancesBtn:OnLeave()
+        local posX, posY = self:GetOffset()
+        api.Interface:SetTooltipOnPos(nil, defaultAppearancesWindow, posX + 50, posY + 20)
+    end
+    defaultAppearancesBtn:SetHandler("OnLeave", defaultAppearancesBtn.OnLeave)
+
+    updateButtonText()
     defaultAppearancesWindow:Show(true)
 end
 
 local function OnLoad()
+    settings = api.GetSettings(SETTINGS_KEY)
+    if settings == nil then
+        settings = {
+            x = DEFAULT_X,
+            y = DEFAULT_Y
+        }
+        saveSettings()
+    end
+
     createButton()
-    log("Loaded")
 end
 
 local function OnUnload()
