@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.9
+
+- Added current-value marker in the right-click max displayed player menu.
+- Current option now displays as `> number <`.
+- Reads current value with `api.Option:GetCustomCloneModelCountSetting()`.
+- Falls back to saved addon value if needed.
+
 ## 1.1.8
 
 - Added the banner image to the top of the release notes.

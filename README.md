@@ -12,10 +12,15 @@ Left-click toggles default appearances and prints the new state in chat.
 
 Right-click opens max displayed player options only when default appearances are ON.
 
+The current max displayed player value is marked with angle brackets in the menu, for example:
+
+- `> 100 <`
+
 It uses:
 
 - `api.Option:GetCustomCloneModeSetting()`
 - `api.Option:SetCustomCloneModeSetting(value)`
+- `api.Option:GetCustomCloneModelCountSetting()`
 - `api.Option:SetCustomCloneModelCountSetting(value)`
 - `X2Option:SetConsoleVariable("e_custom_max_model", value)`
 
@@ -53,7 +58,7 @@ Shift + drag the button to move it. The position is saved.
 
 ## Version
 
-1.1.8
+1.1.9
 
 ## Author
 

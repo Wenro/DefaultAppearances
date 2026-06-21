@@ -3,7 +3,7 @@ local api = require("api")
 local default_appearances_addon = {
     name = "DefaultAppearances",
     author = "Dope",
-    version = "1.1.8",
+    version = "1.1.9",
     desc = "Easy toggle on and off for default appearances."
 }
 
@@ -49,6 +49,22 @@ end
 
 local function isDefaultAppearanceOn()
     return api.Option:GetCustomCloneModeSetting() ~= 0
+end
+
+local function getCurrentModelCountValue()
+    local ok, value = pcall(function()
+        return api.Option:GetCustomCloneModelCountSetting()
+    end)
+
+    if ok and value ~= nil then
+        return tonumber(value)
+    end
+
+    if settings ~= nil and settings.modelCountValue ~= nil then
+        return tonumber(settings.modelCountValue)
+    end
+
+    return nil
 end
 
 local function updateButtonText()
@@ -133,6 +149,7 @@ local function createModelCountWindow()
     end
 
     local modelWindowH = (MODEL_PADDING * 2) + (#MODEL_COUNT_OPTIONS * MODEL_BUTTON_H) + ((#MODEL_COUNT_OPTIONS - 1) * MODEL_BUTTON_GAP)
+    local currentValue = getCurrentModelCountValue()
 
     modelCountWindow = api.Interface:CreateEmptyWindow("defaultAppearancesModelCountWindow", "UIParent")
     modelCountWindow:SetExtent(MODEL_WINDOW_W, modelWindowH)
@@ -165,7 +182,12 @@ local function createModelCountWindow()
             MODEL_PADDING,
             MODEL_PADDING + ((i - 1) * (MODEL_BUTTON_H + MODEL_BUTTON_GAP))
         )
-        btn:SetText(selectedOption.label)
+
+        if currentValue ~= nil and tonumber(selectedOption.value) == tonumber(currentValue) then
+            btn:SetText("> " .. selectedOption.label .. " <")
+        else
+            btn:SetText(selectedOption.label)
+        end
 
         function btn:OnClick()
             setModelCount(selectedOption)
